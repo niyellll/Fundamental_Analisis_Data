@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from scipy import stats
 
-# ── Konfigurasi Halaman ───────────────────────────────────────────────────────
+# Konfigurasi Halaman 
 st.set_page_config(
     page_title="Air Quality Changping",
     page_icon="🌫️",
@@ -13,7 +13,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# ── Konstanta (sama persis dengan notebook) ───────────────────────────────────
+# Konstanta 
 SEASON_COLOR = {
     'Spring': '#4CAF50',
     'Summer': '#FF9800',
@@ -33,7 +33,7 @@ AQI_ORDER = [
     'Unhealthy', 'Very Unhealthy', 'Hazardous'
 ]
 
-# ── Load & Proses Data (sama dengan notebook) ─────────────────────────────────
+# Load & Proses Data 
 @st.cache_data
 def load_data():
     import os
@@ -70,7 +70,7 @@ def load_data():
 
 df = load_data()
 
-# ── Sidebar Filter ────────────────────────────────────────────────────────────
+# Sidebar Filter 
 st.sidebar.title("🌫️ Filter Data")
 st.sidebar.markdown("**Stasiun Changping, Beijing**")
 st.sidebar.markdown("---")
@@ -90,21 +90,21 @@ st.sidebar.info(
     "**Periode:** Mar 2013 – Feb 2017"
 )
 
-# ── Terapkan Filter ───────────────────────────────────────────────────────────
+# Terapkan Filter 
 df_f = df[
     df['year'].between(year_range[0], year_range[1]) &
     df['season'].isin(sel_seasons)
 ].copy()
 
-# ── Header ────────────────────────────────────────────────────────────────────
-st.title("🌫️ Dashboard Kualitas Udara – Stasiun Changping, Beijing")
+# Header 
+st.title("Dashboard Kualitas Udara – Stasiun Changping, Beijing")
 st.markdown(
     "Dashboard ini menyajikan hasil analisis kualitas udara per jam "
     "dari **Stasiun Changping** periode 2013–2017 secara interaktif."
 )
 st.markdown("---")
 
-# ── KPI ───────────────────────────────────────────────────────────────────────
+# KPI 
 k1, k2, k3, k4, k5 = st.columns(5)
 k1.metric("📊 Total Data",    f"{len(df_f):,}")
 k2.metric("🔵 Avg PM2.5",     f"{df_f['PM2.5'].mean():.1f} µg/m³")
@@ -113,16 +113,15 @@ k4.metric("⚠️ % Tidak Sehat", f"{(df_f['PM2.5'] > 55.4).mean() * 100:.1f}%")
 k5.metric("✅ % Good",         f"{(df_f['PM2.5'] <= 12).mean() * 100:.1f}%")
 st.markdown("---")
 
-# ── Tab ───────────────────────────────────────────────────────────────────────
+# Tab 
 tab1, tab2, tab3 = st.tabs([
     "📈 Pertanyaan 1 – Tren & Musim",
     "🌤️ Pertanyaan 2 – Pengaruh Cuaca",
     "📊 Analisis Lanjutan – Clustering"
 ])
 
-# ════════════════════════════════════════════════════════════════════════════
-# TAB 1 — Pertanyaan 1
-# ════════════════════════════════════════════════════════════════════════════
+
+# Pertanyaan 1
 with tab1:
     st.subheader("Pertanyaan 1: Bagaimana tren dan pola musiman PM2.5 di Stasiun Changping?")
 
@@ -143,7 +142,7 @@ with tab1:
 
     st.markdown("---")
 
-    # ── Bar musim + boxplot (cell 30 lanjutan) ────────────────────────────────
+    #Bar musim + boxplot 
     col_a, col_b = st.columns(2)
     season_order = ['Spring', 'Summer', 'Autumn', 'Winter']
 
@@ -181,7 +180,7 @@ with tab1:
         st.pyplot(fig3)
         plt.close()
 
-    # ── Statistik musim (cell 28) ─────────────────────────────────────────────
+    # Statistik musim 
     st.markdown("---")
     st.markdown("#### Statistik PM2.5 per Musim")
     season_stats = df_f.groupby('season').agg(
@@ -192,7 +191,7 @@ with tab1:
     ).reindex(season_order).round(2)
     st.dataframe(season_stats, use_container_width=True)
 
-    # ── Pola harian (cell 24) ─────────────────────────────────────────────────
+    # Pola harian 
     st.markdown("---")
     st.markdown("#### Pola PM2.5 per Jam dalam Sehari")
     hourly_pm = df_f.groupby('hour')['PM2.5'].mean()
@@ -209,19 +208,17 @@ with tab1:
     col1.info(f"🌙 **Jam puncak:** {hourly_pm.idxmax()}:00  ({hourly_pm.max():.1f} µg/m³)")
     col2.info(f"🌅 **Jam terbersih:** {hourly_pm.idxmin()}:00  ({hourly_pm.min():.1f} µg/m³)")
 
-    # ── Kesimpulan ────────────────────────────────────────────────────────────
+    # Kesimpulan
     st.success(
         "**Kesimpulan Pertanyaan 1:** Polusi PM2.5 di Changping dipengaruhi musim, "
         "dengan puncak polusi di musim dingin dan udara relatif bersih di musim panas."
     )
 
-# ════════════════════════════════════════════════════════════════════════════
-# TAB 2 — Pertanyaan 2
-# ════════════════════════════════════════════════════════════════════════════
+# Pertanyaan 2
 with tab2:
     st.subheader("Pertanyaan 2: Bagaimana pengaruh kecepatan angin, suhu, dan tekanan udara terhadap PM2.5?")
 
-    # ── Korelasi Spearman (cell 33) ───────────────────────────────────────────
+    # Korelasi Spearman 
     st.markdown("#### Uji Korelasi Spearman: Cuaca vs PM2.5")
     weather_vars = ['TEMP', 'PRES', 'DEWP', 'RAIN', 'WSPM']
     corr_results = {}
@@ -237,7 +234,7 @@ with tab2:
     st.markdown("---")
     col_c, col_d = st.columns(2)
 
-    # ── Kecepatan angin vs PM2.5 (cell 34) ───────────────────────────────────
+    # Kecepatan angin vs PM2.5
     with col_c:
         st.markdown("#### Pengaruh Kecepatan Angin terhadap PM2.5")
         ws_bins = pd.cut(
@@ -253,7 +250,7 @@ with tab2:
         st.pyplot(fig5)
         plt.close()
 
-    # ── Scatter suhu vs PM2.5 (cell 34) ──────────────────────────────────────
+    # Scatter suhu vs PM2.5 
     with col_d:
         st.markdown("#### Scatter: Suhu vs PM2.5")
         sample = df_f.sample(min(2000, len(df_f)), random_state=42)
@@ -265,7 +262,7 @@ with tab2:
         st.pyplot(fig6)
         plt.close()
 
-    # ── Heatmap korelasi (cell 26) ────────────────────────────────────────────
+    # Heatmap korelasi 
     st.markdown("---")
     st.markdown("#### Heatmap Korelasi Antar Variabel")
     corr_cols = ['PM2.5','PM10','SO2','NO2','CO','O3','TEMP','PRES','DEWP','RAIN','WSPM']
@@ -276,16 +273,14 @@ with tab2:
     st.pyplot(fig7)
     plt.close()
 
-    # ── Kesimpulan ────────────────────────────────────────────────────────────
+    # Kesimpulan
     st.success(
         "**Kesimpulan Pertanyaan 2:** Faktor cuaca memang mempengaruhi polusi PM2.5. "
         "Angin kencang dan hujan membantu membersihkan udara, sedangkan suhu rendah "
         "dan kondisi musim dingin membuat polusi lebih parah."
     )
 
-# ════════════════════════════════════════════════════════════════════════════
 # TAB 3 — Analisis Lanjutan Clustering
-# ════════════════════════════════════════════════════════════════════════════
 with tab3:
     st.subheader("Analisis Lanjutan: Clustering Manual (Binning PM2.5)")
     st.markdown("""
@@ -300,7 +295,7 @@ with tab3:
 
     st.markdown("---")
 
-    # ── Distribusi tingkat polusi (cell 37) ───────────────────────────────────
+    # Distribusi tingkat polusi 
     st.markdown("#### Distribusi Tingkat Polusi PM2.5")
     level_order = ['Rendah', 'Sedang', 'Tinggi', 'Sangat Tinggi', 'Berbahaya']
     cnt = df_f['pollution_level'].value_counts().reindex(level_order)
@@ -327,7 +322,7 @@ with tab3:
     st.markdown("---")
     col_e, col_f = st.columns(2)
 
-    # ── Distribusi per musim ──────────────────────────────────────────────────
+    # Distribusi per musim
     with col_e:
         st.markdown("#### Tingkat Polusi per Musim (%)")
         prop_ms = (
@@ -353,7 +348,7 @@ with tab3:
         st.pyplot(fig9)
         plt.close()
 
-    # ── Distribusi per jam ────────────────────────────────────────────────────
+    #  Distribusi per jam 
     with col_f:
         st.markdown("#### Tingkat Polusi per Periode Hari (%)")
         hour_groups = pd.cut(
@@ -382,7 +377,7 @@ with tab3:
         st.pyplot(fig10)
         plt.close()
 
-    # ── Hasil temuan (cell 38) ────────────────────────────────────────────────
+    # Hasil temuan 
     st.markdown("---")
     st.markdown("#### Hasil Temuan")
     st.info("""
@@ -399,7 +394,7 @@ with tab3:
     - Fokus monitoring di jam malam.
     """)
 
-    # ── Hasil analisa (cell 39) ───────────────────────────────────────────────
+    # Hasil analisa 
     st.markdown("---")
     st.markdown("#### Ringkasan Hasil Analisa")
     c1, c2, c3 = st.columns(3)
@@ -411,6 +406,6 @@ with tab3:
     c5.metric("❄️ Musim Terburuk", f"Winter ({df_f[df_f.season=='Winter']['PM2.5'].mean():.1f} µg/m³)")
     c6.metric("☀️ Musim Terbaik", f"Summer ({df_f[df_f.season=='Summer']['PM2.5'].mean():.1f} µg/m³)")
 
-# ── Footer ────────────────────────────────────────────────────────────────────
+# Footer 
 st.markdown("---")
-st.caption("🌫️ Nathaniel Krisnahadi P | PRSA Air Quality Dataset – Stasiun Changping | Streamlit Dashboard")
+st.caption(" Nathaniel Krisnahadi P | PRSA Air Quality Dataset – Stasiun Changping | Streamlit Dashboard")

@@ -71,7 +71,7 @@ def load_data():
 df = load_data()
 
 # Sidebar Filter 
-st.sidebar.title("🌫️ Filter Data")
+st.sidebar.title(" Filter Data")
 st.sidebar.markdown("**Stasiun Changping, Beijing**")
 st.sidebar.markdown("---")
 

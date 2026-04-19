@@ -8,7 +8,6 @@ from scipy import stats
 # Konfigurasi Halaman 
 st.set_page_config(
     page_title="Air Quality Changping",
-    page_icon="🌫️",
     layout="wide",
     initial_sidebar_state="expanded"
 )
